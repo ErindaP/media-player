@@ -161,4 +161,38 @@ router.get("/play/:id", async (req, res) => {
   
 
 
+
+  
+  router.get('/playlists', async (req, res) => {
+    console.log("🔍 Requête reçue sur /playlists");
+    try {
+      const playlists = await Playlist.find().populate("tracks");
+      res.json(playlists);
+    } catch (err) {
+      console.error("❌ Erreur lors de la récupération des playlists :", err);
+      res.status(500).json({ error: "Erreur lors de la récupération des playlists." });
+    }
+  });
+  
+  // Ajout d'un track à une playlist
+  router.post('/playlists/:id/add', async (req, res) => {
+    const { trackId } = req.body;
+    const playlist = await Playlist.findById(req.params.id);
+    if (!playlist) return res.status(404).json({ error: 'Playlist non trouvée' });
+  
+    playlist.tracks.push(trackId);
+    await playlist.save();
+    res.json(playlist);
+  });
+  
+
+  
+  // Supprimer une playlist
+  router.delete('/playlists/:id', async (req, res) => {
+
+    await Playlist.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  });
+  
+
 module.exports = router;

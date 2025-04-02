@@ -15,6 +15,12 @@ interface Track {
 
   
 }
+interface Playlist {
+  _id: string;
+  name: string;
+  tracks: Track[];
+}
+
 
 export default function MediaPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,6 +31,9 @@ export default function MediaPlayer() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1); 
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [newPlaylistName, setNewPlaylistName] = useState("");
 
 
   // Référence au lecteur audio
@@ -39,6 +48,10 @@ export default function MediaPlayer() {
         setTracks(data);
       })
       .catch((error) => console.error("Erreur lors du chargement des tracks :", error));
+      fetch("http://localhost:5000/playlists")
+      .then(res => res.json())
+      .then(setPlaylists)
+      .catch(console.error);
   }, []);
 
   // Jouer un média sélectionnée
@@ -269,6 +282,44 @@ export default function MediaPlayer() {
   };
 
 
+  const createPlaylist = async () => {
+    if (!newPlaylistName) return;
+    
+    try {
+      const response = await fetch("http://localhost:5000/playlists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newPlaylistName }),
+      });
+
+      if (!response.ok) throw new Error("Erreur lors de la création de la playlist");
+
+      const newPlaylist = await response.json();
+      setPlaylists([...playlists, newPlaylist]);
+      setNewPlaylistName("");
+    } catch (error) {
+      console.error("Erreur création playlist:", error);
+    }
+  };
+
+  const addTrackToPlaylist = async (playlistId: string, trackId: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/playlists/${playlistId}/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trackId }),
+      });
+
+      if (!response.ok) throw new Error("Erreur lors de l'ajout du média à la playlist");
+
+      const updatedPlaylist = await response.json();
+      setPlaylists(playlists.map(p => (p._id === playlistId ? updatedPlaylist : p)));
+    } catch (error) {
+      console.error("Erreur ajout média playlist:", error);
+    }
+  };
+
+
 
 
   return (
@@ -291,6 +342,7 @@ export default function MediaPlayer() {
         </li>
   
       </ul>
+      
 
       {/* Ajout de musique */}
       <div className="mt-4">
@@ -318,7 +370,7 @@ export default function MediaPlayer() {
       {/* Main Content */}
       <main className="w-2/4 p-4 h-full overflow-y-auto">
       <Card className="bg-gradient-to-b from-green-500 to-gray-800 p-6">
-        <h1 className="text-4xl font-bold">Spotiflop</h1>
+        <h1 className="text-4xl font-bold">Spotifinito</h1>
         <p className="text-gray-300">
       Avec{" "}
       {tracks.slice(0, 2).map((track, index) => (
@@ -379,7 +431,7 @@ export default function MediaPlayer() {
       } bg-gray-900 p-4 h-full flex flex-col gap-4 overflow-y-auto transition-all duration-300`}
       >
       <Card className="bg-gradient-to-b from-green-500 to-gray-800 p-6">
-        <h1 className="text-4xl font-bold">TikFlop</h1>
+        <h1 className="text-4xl font-bold">TikFraude</h1>
       </Card>
       {selectedMedia?.type === "video" && (
         <video

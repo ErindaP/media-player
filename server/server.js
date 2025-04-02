@@ -33,4 +33,7 @@ mongoose.connect("mongodb://localhost:27017/media_player", {
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+  console.log("Routes enregistrées :", app._router.stack.map(r => r.route && r.route.path));
+
+
 app.listen(5000, () => console.log("Serveur sur http://localhost:5000"));

@@ -29,6 +29,13 @@ Spotiflop x Tikflop est un lecteur multimédia développé avec **React (Vite)**
 - Un bouton pour aimer ou ne pas aimer une musique.
 - Affichage des médias aimés en cliquant sur le bouton "Titres likés".
 
+### ✅ Parsing à la main pour titre artiste album / extensions
+- Parsing à la main du titre, artiste et album à partir du nom du fichier avec la sémantique : `titre-artiste_album.extension` (ex: `toto-mon-album-titi.mp3`).
+- Parsing des extensions pour différencier les fichiers audio et vidéo. 
+
+
+
+
 
 
 ---

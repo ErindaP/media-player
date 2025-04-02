@@ -8,7 +8,7 @@ const fs = require("fs");
 console.log("Track model:", Track);
 const router = express.Router();
 
-// 📂 Configuration de Multer pour stocker les fichiers audio
+// Stockage fichiers audio
 const storage = multer.diskStorage({
   destination: "./uploads/",
   filename: (req, file, cb) => {
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-// 🎵 **Endpoint pour ajouter une musique (Upload)**
+// Route ajout media
 router.post("/upload", upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
@@ -27,9 +27,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         console.log("Fichier reçu :", req.file);
         console.log("Données reçues :", req.body);
 
-        // Access the metadata field from the body
+        // Accès au bodsy
         const metadata = JSON.parse(req.body.metadata || "{}");
-        const {title, artist, album, duration, type } = metadata; // Destructure metadata fields
+        const {title, artist, album, duration, type } = metadata; 
 
         console.log("Metadata :", metadata);
         console.log("Artist :", artist);
@@ -40,7 +40,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             title: title || "Inconnu",
             artist: artist || "Inconnu",
             album: album || "Non classé",
-            duration: duration || "0:00", // Durée par défaut (à calculer si possible)
+            duration: duration || "0:00", // Bon je voulais mettre les durées mais deprecated
             type: type || "Inconnu",
             filePath: `/uploads/${req.file.filename}`,
         });
@@ -52,13 +52,13 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 });
 
-
+// Supprimer le fichier physique si présent 
 router.delete("/delete/:id", async (req, res) => {
     try {
       const track = await Track.findByIdAndDelete(req.params.id);
       if (!track) return res.status(404).json({ error: "Musique introuvable" });
   
-      // 🔥 Supprimer le fichier physique si présent
+      
       const filePath = path.join(__dirname, "..", track.filePath);
       fs.unlink(filePath, (err) => {
         if (err) console.error("Erreur lors de la suppression du fichier :", err);
@@ -77,8 +77,7 @@ router.post("/like/:id", async (req, res) => {
         const track = await Track.findById(req.params.id);
         if (!track) return res.status(404).json({ error: "Musique introuvable" });
   
-        // Ajoutez la logique pour ajouter la musique aux musiques likées
-        // Par exemple, vous pouvez ajouter un champ `liked` dans le modèle Track
+
         track.isLiked = true;
         await track.save();
   
@@ -110,7 +109,6 @@ router.post("/unlike/:id", async (req, res) => {
         console.log("Track trouvé :", track);
         if (!track) return res.status(404).json({ error: "Musique introuvable" });
         console.log("Track avant la modification :", track);
-        // Ajoutez la logique pour retirer la musique des musiques likées
         track.isLiked = false;
         await track.save();
         res.json(track);
@@ -126,7 +124,7 @@ router.post("/unlike/:id", async (req, res) => {
 
 
 
-// 📜 **Endpoint pour récupérer toutes les musiques**
+// Endpoint pour récupérer toutes les musiques 
 router.get("/", async (req, res) => {
   try {
     const tracks = await Track.find();
@@ -136,7 +134,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🎶 **Endpoint pour jouer une musique**
+//Endpoint pour jouer une musique 
 router.get("/play/:id", async (req, res) => {
     try {
       console.log("ID de la musique :", req.params.id);
@@ -161,5 +159,6 @@ router.get("/play/:id", async (req, res) => {
     }
   });
   
+
 
 module.exports = router;

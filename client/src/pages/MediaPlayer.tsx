@@ -24,13 +24,13 @@ export default function MediaPlayer() {
   const [selectedMedia, setSelectedMedia] = useState<Track | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1); // Volume par défaut à 100%
+  const [volume, setVolume] = useState(1); 
 
 
   // Référence au lecteur audio
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  // Charger les musiques depuis l'API
+  // Charger les musiques depuis l'API de la base de données
   useEffect(() => {
     fetch("http://localhost:5000/tracks")
       .then((res) => res.json())
@@ -41,7 +41,7 @@ export default function MediaPlayer() {
       .catch((error) => console.error("Erreur lors du chargement des tracks :", error));
   }, []);
 
-  // Jouer une musique sélectionnée
+  // Jouer un média sélectionnée
   const playTrack = (track: Track) => {
     setSelectedMedia(track);
     console.log("Track sélectionnée :", track);
@@ -70,7 +70,7 @@ export default function MediaPlayer() {
         setCurrentTrack(trackUrl);
         setIsPlaying(true);
 
-        // Force le rechargement du lecteur vidéo
+        // Force le rechargement du lecteur vidéo (à cause de pbs quand on changeait de média)
         if (videoRef.current) {
           videoRef.current.load();
           videoRef.current.play();
@@ -92,7 +92,7 @@ export default function MediaPlayer() {
       setCurrentTrack(trackUrl);
       setIsPlaying(true);
 
-      // Force le rechargement du lecteur audio
+      // Force le rechargement du lecteur audio (à cause de pbs quand on changeait de média)
       if (audioRef.current) {
         audioRef.current.load();
         audioRef.current.play();
@@ -228,7 +228,7 @@ export default function MediaPlayer() {
 
       const newTrack = await response.json();
 
-      setTracks((prevTracks) => [...prevTracks, newTrack]); // Ajouter la nouvelle musique/vidéo à la liste
+      setTracks((prevTracks) => [...prevTracks, newTrack]); 
 
       setSelectedFile(null);
       alert("Média ajouté avec succès !");
@@ -248,7 +248,7 @@ export default function MediaPlayer() {
     }
   };
 
-  // Like or Unlike media
+  // Like or Unlike un media 
   const toggleLikeTrack = async (id: string, isLiked: boolean) => {
     try {
       const endpoint = isLiked
@@ -289,6 +289,7 @@ export default function MediaPlayer() {
         >
         Titres likés
         </li>
+  
       </ul>
 
       {/* Ajout de musique */}
@@ -351,17 +352,14 @@ export default function MediaPlayer() {
             <td className="p-2">{index + 1}</td>
             <td className="p-2">{track.title} - {track.artist}</td>
             <td className="p-2">{track.album}</td>
-            <td className="p-2">
+            <td className="p-2 flex items-center gap-2">
               <button onClick={(e) => {e.stopPropagation(); deleteTrack(track._id)}} className="!bg-green-800 text-red-500">
               ❌
               </button>
-            </td>
-            <td className="p-2">
               <button onClick={(e) => {e.stopPropagation(); toggleLikeTrack(track._id, track.isLiked)}} className="!bg-green-800 text-red-500">
               {track.isLiked ? "❤️" : "🤍"}
               </button>
             </td>
-
             </tr>
           ))
           ) : (
@@ -391,7 +389,7 @@ export default function MediaPlayer() {
       autoPlay
       onTimeUpdate={handleTimeUpdate}
       onLoadedMetadata={handleLoadedMetadata}
-      className="w-auto h-[60%]" // Set height to 40% of the full height
+      className="w-auto h-[60%]" 
         />
       )}
       </div>

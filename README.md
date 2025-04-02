@@ -1,4 +1,4 @@
-# 🎵 Spotiflop x Tikflop - Media Player React  
+# 🎵 Spotiflop x Tikflop - Media Player React  - Dziki Yanis
 
 Spotiflop x Tikflop est un lecteur multimédia développé avec **React (Vite)** permettant de gérer et lire des fichiers audio et vidéo. Il se connecte à une API backend faites en Node.js/Express et MongoDB pour la gestion des médias.
 
